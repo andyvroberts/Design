@@ -39,9 +39,17 @@ The Elexon SAA has 2 Data APIs:
 ### Logical Design  
 Being agnostic of any technology or design patterns, the logical design is represented by the diagram:  
 
-![Logical Design Diagram](images/acquisition-Logical.svg)
+![Logical Design](images/acquisition-Logical.svg)
 
 ### Azure Component Design
+
+![Azure Component Design](images/acquisition-Component.svg?raw=true)
+
+### Sequence
+
+![Sequence Diagram](images/acquisition-Sequence.svg)
+
+
 
 
 
