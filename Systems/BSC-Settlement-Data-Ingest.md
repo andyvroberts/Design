@@ -17,7 +17,6 @@ The Elexon SAA has 2 Data APIs:
 - Single named File GET
 
 </br>
-<div class=firstcol>
 
 | # | Functional Requirement |
 |:-------------|:--------------|
@@ -33,8 +32,6 @@ The Elexon SAA has 2 Data APIs:
 | NFR-3 | Execution and Storage costs should be minimised, therefore process duplication & complexity constraints may be relaxed. |
 | NFR-4 | Duplicate files should not be created and stored. |
 | NFR-5 | There are no performance demands, apart from those imposed by Serverless HTTP timeouts. |  
-
-</div>
 
 </br>
 
@@ -71,13 +68,5 @@ The following UML sequence diagram provides an overview of steps required within
 
 ![Sequence Diagram](images/acquisition-Sequence.svg)
 
-
-<style>
-.firstcol table {
-    th:first-of-type {
-        width: 5em;
-    }
-}
-<style/>
 
 
