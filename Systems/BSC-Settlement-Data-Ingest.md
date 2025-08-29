@@ -54,11 +54,13 @@ NFR-1 and NFR-3 wil be met by using an Azure Function App, which has a free (low
 </br>
 
 A timer trigger will be used as the mechanism to initiate the daily ingestion process.  
-The table storage which is a suitable configuration store, will be used to contain the settlement date for querying the File List API, and to create messages for every file to be retrieved.  To meet NFR-5, each message will then trigger a Function which will retrieve that individual file.  Calling a Function per file is an attempt to mitigate both Function App and HTTP timeouts.  
+The table storage which is a suitable configuration store, will be used to contain the settlement date for querying the File List API.  Once the file list is known, the Function will create and Queue messages for every file to be retrieved.  To meet NFR-5, each queued message will then trigger a Function which will retrieve that individual file.  Calling a Function per file is an attempt to mitigate both Function App and HTTP timeouts.  
   
 To meet NFR-2, if a file load process does not complete, this should be apparent from the condition of the table configuration entries.  In this case, the retry timer triggered Function will manage re-queueing of failed files. 
 
 To meet NFR-4, the queue trigger Function should abort any process which tries to update the configuration record of a completed file. 
+  
+Serially enqueued messages for a collection of files should always be given an incrementing visibility timeout, which will negate Azure's attempts to run parallel functions.  This will ensure cost control for NFR-3 by avoiding more sophisticated and costly Function App configuration options.  In addition, the TTL (time to live) of enqueued messages should be set to non-expiry, which will guarantee messages only expire on dequeue operations.  
 
 </br>
 
