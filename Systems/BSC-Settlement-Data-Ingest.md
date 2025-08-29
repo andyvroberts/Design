@@ -17,6 +17,7 @@ The Elexon SAA has 2 Data APIs:
 - Single named File GET
 
 </br>
+<div class=firstcol>
 
 | # | Functional Requirement |
 |:-------------|:--------------|
@@ -24,9 +25,7 @@ The Elexon SAA has 2 Data APIs:
 | FR-2 | Do not ingest duplicate files. |
 | FR-3 | Maintain a viewable log of the files that have been ingested. |
 | FR-4 | Retain the following information within the file names: </br> Settlement Date / Settlement Run Type / SAA Run Date. |
-
-<div class=firstcol>
-
+  
 | # | Non-Functional Requirement |
 |:-------------|:--------------|
 | NFR-1 | Only use Serverless infrastructure to allow hosting in public cloud environments.|
@@ -73,14 +72,12 @@ The following UML sequence diagram provides an overview of steps required within
 ![Sequence Diagram](images/acquisition-Sequence.svg)
 
 
-
+<style>
 .firstcol table {
     th:first-of-type {
-        width: 20%;
-    }
-    th:nth-of-type(2) {
-        width: 80%;
+        width: 5em;
     }
 }
+<style/>
 
 
