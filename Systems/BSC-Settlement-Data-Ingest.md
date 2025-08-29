@@ -25,6 +25,8 @@ The Elexon SAA has 2 Data APIs:
 | FR-3 | Maintain a viewable log of the files that have been ingested. |
 | FR-4 | Retain the following information within the file names: </br> Settlement Date / Settlement Run Type / SAA Run Date. |
 
+<div class=firstcol>
+
 | # | Non-Functional Requirement |
 |:-------------|:--------------|
 | NFR-1 | Only use Serverless infrastructure to allow hosting in public cloud environments.|
@@ -33,6 +35,7 @@ The Elexon SAA has 2 Data APIs:
 | NFR-4 | Duplicate files should not be created and stored. |
 | NFR-5 | There are no performance demands, apart from those imposed by Serverless HTTP timeouts. |  
 
+</div>
 
 </br>
 
@@ -71,5 +74,13 @@ The following UML sequence diagram provides an overview of steps required within
 
 
 
+.firstcol table {
+    th:first-of-type {
+        width: 20%;
+    }
+    th:nth-of-type(2) {
+        width: 80%;
+    }
+}
 
 
