@@ -27,8 +27,8 @@ The Elexon SAA has 2 Data APIs:
 
 | # | Non-Functional Requirement |
 |:-------------|:--------------|
-| NFR-1 | Only use Serverless infrastructure to allow hosting in public cloud environments. |
-| NFR-2 | Any failure in API communication should be automatically recovered/retried to avoid the need for manual intervention. |
+| NFR-1 | Only use Serverless infrastructure to allow hosting in public cloud environments.|
+| NFR-2 | Any failure in execution or API communication should be automatically recovered/retried to avoid the need for manual intervention. |
 | NFR-3 | Execution and Storage costs should be minimised, therefore process duplication & complexity constraints may be relaxed. |
 | NFR-4 | Duplicate files should not be created and stored. |
 | NFR-5 | There are no performance demands, apart from those imposed by Serverless HTTP timeouts. |  
@@ -37,15 +37,33 @@ The Elexon SAA has 2 Data APIs:
 </br>
 
 ### Logical Design  
-Being agnostic of any technology or design patterns, the logical design is represented by the diagram:  
+Being agnostic of any technology or design patterns, the logical design is represented by the layers in the following diagram:  
 
 ![Logical Design](images/acquisition-Logical.svg)
 
+The Data Acquisition layer provides the orchestration required to meet FR-1 thru FR-4.  
+
+</br>
+
 ### Azure Component Design
+This component design is just one of the many ways of implementing the Logical Design.   
+NFR-1 and NFR-3 wil be met by using an Azure Function App, which has a free (low-cost) tier and which can automatically integrate into other Azure components such as an inexpensive Storage Account that incorporates blob storage (files), table storage (key-value pair DB), and message Queueing features.  
 
 ![Azure Component Design](images/acquisition-Component.svg?raw=true)
 
+</br>
+
+A timer trigger will be used as the mechanism to initiate the daily ingestion process.  
+The table storage which is a suitable configuration store, will be used to contain the settlement date for querying the File List API, and to create messages for every file to be retrieved.  To meet NFR-5, each message will then trigger a Function which will retrieve that individual file.  Calling a Function per file is an attempt to mitigate both Function App and HTTP timeouts.  
+  
+To meet NFR-2, if a file load process does not complete, this should be apparent from the condition of the table configuration entries.  In this case, the retry timer triggered Function will manage re-queueing of failed files. 
+
+To meet NFR-4, the queue trigger Function should abort any process which tries to update the configuration record of a completed file. 
+
+</br>
+
 ### Sequence
+The following UML sequence diagram provides an overview of steps required within this design.  It also shows that the Timer and Queue Functions contain the majority of activity, and hence the focus of the development effort will be in these components.  It also indicates that Table Storage is most frequenty accessed, and therefore the design of the table record keys should be carefully considered to efficiently meet all processing needs.  
 
 ![Sequence Diagram](images/acquisition-Sequence.svg)
 
