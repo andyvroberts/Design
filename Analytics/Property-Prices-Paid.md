@@ -27,8 +27,9 @@ The CSV data file has this structure.
 <br/>
 
 ### Dimensional Model Introduction 
-Within Relational Database Management Systems (RDBMS) such as Oracle, DB2 or SQL Server, etc, a dimensional data model is a relationaly organised table structure, optimised for aggregation and grouping operations.  The model is focused on semantics of business domains, and therefore the same values be can presented with differing names and formats.  
-Before creating the model for the Prices Paid data, we will list the most important aspects that influence the design.
+Within Relational Database Management Systems (RDBMS) such as Oracle, DB2 or SQL Server, etc, a dimensional data model is a relationaly organised table structure, optimised for aggregation and grouping operations.  The model is focused on the production of Measures for business domains, and therefore the underlying data values be can presented with differing names and formats.   
+
+Before creating the model for the Prices Paid data, we will describe the most important Dimensional aspects and design decisions.
 
 #### Fact
 A Fact is usually some numerical value to which [Analytic functions](https://en.wikipedia.org/wiki/Analytic_function), or more commonly, Database Functions such as MAX, AVG, SUM, etc. can be applied.   
@@ -46,15 +47,15 @@ There are many possible measures that can be created.  Generally, the greater th
 There are many definitions for data-marts as physical database structures, but the one characteristic they all have in common is that they contain **Subject-Specific** data.  Depending upon the requirements for the uses of Price Paid data, the mart can be modelled in several ways:  
 - As a single dimensional model (semantic)
 - As a small relational model (storage optimised)
-- As a single de-normalised entity (a wide table for Big Data file formats)
+- As a single de-normalised entity (a wide table for Lakehouse file formats)
 
 <br/>
 
 ### Data Mart Design
-Equally important consideration must be given to fundamental purpose of the model once implemented.
+Equally important consideration must be given to the fundamental purpose of the model and how it will be used in its physical implementation.
 
 #### Batch Processing
-In terms of use-cases, many Dimensional data models located within relational databases are directly queried by by automated processes and jobs.  These types of models usually exist for large-scale batch processing as an intermmediate stage between the source data and some product of calculated values.  A good example is financial risk calculations.
+In terms of use-cases, many Dimensional data models located within relational databases are directly queried by by automated processes and jobs.  These types of models usually exist for large-scale batch processing as an intermmediate stage between the source data and some product of calculated values.  A good example is the creation of multiple data marts supporting financial risk calculations.
 
 #### Analytic Processing
 Other Dimensional models are required for reporting or other end-user analytics (MI/BI).  In these cases it is common for Dimensional models to also be loaded into consumer friendly tools such as Tableau, Power BI/Fabric, Qlik, Looker, etc, where they can be given a semantic overlay to make them business domain specific. There are two main possibilities for analytics:  
@@ -67,18 +68,25 @@ In the Prices Paid file, the following data items may require semantic explanati
 - Property Type (D = Detached S = Semi-Detached / T = Terraced / F = Flats, Maisonettes / O = Other)
 - Land Ownership Type (L = Leasehold / F = Freehold)
 
-For data processing purposes, the semantic values are not required and can be ignored.  But if semantic interpretation is required, then the data model must be extended to contain the UK Property domain specific (semantic) descriptions.  
+For (non-human) data processing purposes, the semantic values are not required and can be ignored.  But if semantic interpretation is required, then the data model must be extended to contain the UK Property domain specific (semantic) descriptions.  
 
 
 #### Analytics Decison Matrix
-Excluding Batch processing which does not apply to this design, the dimensional model should satisfy Option 3 in the table below.  
 
 | Option | Processing Purpose? | Semantics Required? | Users Access DB? | Data Mart | Analytic Tool |
 |- |- |- |- |- |- |
-|1|Analytics |No | No | Dimensional | not required |
+|1|Batch |No | No | Dimensional | not required |
 |2|Analytics |Yes | No | Relational <br/> De-normalised | Dimensional (semantic) |
 |3|Analytics |Yes | Yes | Dimensional (semantic) | Dimensional (semantic) |
 |4|Analytics |No | Yes | Dimensional | not required |
+
+Option 1 requires a data mart that is only required for processing data according to some pre-defined calculations which would be optimised by using a Dimensional model.  These processes are only intended to prepare the data for usage elsewhere.  
+
+Option 2 requires two models.  The data mart is only required as a data store that must contain the source values.  The analytic tool will use the data mart to construct a Dimensional model with any additional semantics required to satisfy user queries.
+
+Option 3 requires only one model, but implemented twice.  The Dimensional (semantic) model can be accessed directly through the data mart, or via an analytic tool which loads (or updates) data from the mart.
+
+Option 4 requires a Dimensional model for users to query, but only the originally provided data is required, no semantic enrichment is neccassery.  
 
 <br/>
 
