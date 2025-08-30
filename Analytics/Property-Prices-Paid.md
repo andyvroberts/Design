@@ -1,4 +1,4 @@
-## UK Property: Prices Paid Data 
+## UK Property: Prices Paid Data (PPD)
 The UK Property Prices Paid dataset published by the UK ONS requires just a simple design for an Analytics based Dimensional Data Model.  
 https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads  
 https://www.gov.uk/guidance/about-the-price-paid-data#explanations-of-column-headers-in-the-ppd  
@@ -29,7 +29,7 @@ The CSV data file has this structure.
 ### Dimensional Model Introduction 
 Within Relational Database Management Systems (RDBMS) such as Oracle, DB2 or SQL Server, etc, a dimensional data model is a relationaly organised table structure, optimised for aggregation and grouping operations.  The model is focused on the production of Measures for business domains, and therefore the underlying data values be can presented with differing names and formats.   
 
-Before creating the model for the Prices Paid data, we will describe the most important Dimensional aspects and design decisions.
+Before creating the model for the PPD, we will describe the most important Dimensional aspects and design decisions.
 
 #### Fact
 A Fact is usually some numerical value to which [Analytic functions](https://en.wikipedia.org/wiki/Analytic_function), or more commonly, Database Functions such as MAX, AVG, SUM, etc. can be applied.   
@@ -64,14 +64,14 @@ Other Dimensional models are required for reporting or other end-user analytics 
 
 #### Dimensional vs. Dimensional (semantic)
 If the Dimensions within the model require a semantic interpretation, this is often provided by business domain specific Reference or Master data.  
-In the Prices Paid file, the following data items may require semantic explanation:
+In the PPD file, the following data items may require semantic explanation:
 - Property Type (D = Detached S = Semi-Detached / T = Terraced / F = Flats, Maisonettes / O = Other)
 - Land Ownership Type (L = Leasehold / F = Freehold)
 
 For (non-human) data processing purposes, the semantic values are not required and can be ignored.  But if semantic interpretation is required, then the data model must be extended to contain the UK Property domain specific (semantic) descriptions.  
 
 
-#### Analytics Decison Matrix
+#### Data Model Decison Matrix
 
 | Option | Processing Purpose? | Semantics Required? | Users Access DB? | Data Mart | Analytic Tool |
 |- |- |- |- |- |- |
@@ -80,14 +80,55 @@ For (non-human) data processing purposes, the semantic values are not required a
 |3|Analytics |Yes | Yes | Dimensional (semantic) | Dimensional (semantic) |
 |4|Analytics |No | Yes | Dimensional | not required |
 
-Option 1 requires a data mart that is only required for processing data according to some pre-defined calculations which would be optimised by using a Dimensional model.  These processes are only intended to prepare the data for usage elsewhere.  
+Option 1 requires a data mart needed for processing data according to some pre-defined calculations which would be optimised by using a Dimensional model.  These processes are only intended to prepare the data for usage elsewhere.  
 
 Option 2 requires two models.  The data mart is only required as a data store that must contain the source values.  The analytic tool will use the data mart to construct a Dimensional model with any additional semantics required to satisfy user queries.
 
 Option 3 requires only one model, but implemented twice.  The Dimensional (semantic) model can be accessed directly through the data mart, or via an analytic tool which loads (or updates) data from the mart.
 
-Option 4 requires a Dimensional model for users to query, but only the originally provided data is required, no semantic enrichment is neccassery.  
+Option 4 requires a data mart with a Dimensional model for users to query, but only the originally provided data is needed. No semantic enrichment is neccassery.  
 
 <br/>
 
 ### Data Processing Design
+The method of processing data to create or update a Dimensional model implemented as a phsyical data mart (or a database with a collection of marts) has a direct impact on some elements of the model design.   
+
+#### Fact Keys
+Fact tables do not require a primary key.  
+There is no required access path to just a single record within a Fact table used by Analytic Functions, and there is no requirement to enforce technical (*surrogate*) uniqueness of rows.  
+
+#### Dimension Keys
+There are only two types of keys required for Dimensions.
+1. Surrogate (primary key)
+2. Business (sometimes called Natural)
+
+A **Surrogate** key has only one very specific function.  
+
+It provides an index lookup, for a database engine to join Dimension tables to Fact tables.  This key should always be an integer, as small as can possibly be managed given the expected large number of Fact rows.  This makes the Fact table index created on a surrogate Dimension key extremely compact, to vastly improve the efficiency when performing a filter operation of a Fact by picking one or more Dimension values.  
+
+A **Business** key has two very specific functions.  
+
+- It provides the uniqueness for the updates or inserts of data rows into the Dimension table. 
+- When loading Facts, it provides a lookup (sometimes indexed) between the Fact and the previously created Dimension.
+
+#### Dimension Updates
+The most complex processing for Dimensions, is what to do with changes to data values over time.  For example, given an address, some Streets may be renamed.  
+
+There are several ways to manage this, using SCD (slowly changing Dimension) types:
+|Data Mart|SCD Type|Versions|Outcome|
+|- |- |- |- |
+|Data Mart is truncated.<br/> All records are inserted. |1|No |The data is always the latest version|
+|All Data is Merged. |2|Full version history by creating new records |Effective start and end dates on each row|
+|Important values are retained for a specific frequency.<br/>New records are inserted. <br/> Special processing for updates.|3|Limited data item versions by updating records |Dimension columns are repeated (the frequency) to contain prior values which must be shuffled on update
+
+Dimensions within the same model may be created with different SCD types, depending on the requirements.  
+
+## PPD Data Model
+The logical data model, as a Dimensional semantic model, for the PPD file is shown below. 
+
+![PPD Logical Data Model](./images/ppd-logical-data-model.svg)
+
+The data model uses a [simplified UML syntax](https://books.google.co.uk/books/about/UML_and_Data_Modeling.html?id=kEi3wAEACAAJ&redir_esc=y) as defined by David C. Hay in 2011.  The PK and FK icons are courtesy of the Visio UML Database Notation stencil.  
+
+### Null Dimensions
+
