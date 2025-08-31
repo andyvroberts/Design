@@ -20,18 +20,18 @@ The Elexon SAA has 2 Data APIs:
 
 | # | Functional Requirement |
 |:-------------|:--------------|
-| FR-1 | Retrieve the daily S0142 files from the Elexon SAA API. |
-| FR-2 | Do not ingest duplicate files. |
-| FR-3 | Maintain a viewable log of the files that have been ingested. |
-| FR-4 | Retain the following information within the file names: </br> Settlement Date / Settlement Run Type / SAA Run Date. |
+| FR01 | Retrieve the daily S0142 files from the Elexon SAA API. |
+| FR02 | Do not ingest duplicate files. |
+| FR03 | Maintain a viewable log of the files that have been ingested. |
+| FR04 | Retain the following information within the file names: </br> Settlement Date / Settlement Run Type / SAA Run Date. |
   
 | # | Non-Functional Requirement |
 |:-------------|:--------------|
-| NFR-1 | Only use Serverless infrastructure to allow hosting in public cloud environments.|
-| NFR-2 | Any failure in execution or API communication should be automatically recovered/retried to avoid the need for manual intervention. |
-| NFR-3 | Execution and Storage costs should be minimised, therefore process duplication & complexity constraints may be relaxed. |
-| NFR-4 | Duplicate files should not be created and stored. |
-| NFR-5 | There are no performance demands, apart from those imposed by Serverless HTTP timeouts. |  
+| NFR01 | Only use Serverless infrastructure to allow hosting in public cloud environments.|
+| NFR02 | Any failure in execution or API communication should be automatically recovered/retried to avoid the need for manual intervention. |
+| NFR03 | Execution and Storage costs should be minimised, therefore process duplication & complexity constraints may be relaxed. |
+| NFR04 | Duplicate files should not be created and stored. |
+| NFR05 | There are no performance demands, apart from those imposed by Serverless HTTP timeouts. |  
 
 </br>
 
@@ -64,7 +64,9 @@ Serially enqueued messages for a collection of files should always be given an i
 </br>
 
 ### Sequence
-The following UML sequence diagram provides an overview of steps required within this design.  It also shows that the Timer and Queue Functions contain the majority of activity, and hence the focus of the development effort will be in these components.  It also indicates that Table Storage is most frequenty accessed, and therefore the design of the table record keys should be carefully considered to efficiently meet all processing needs.  
+The following UML sequence diagram provides the logical order of the interaction between the components required within this design.  
+
+It also shows that the Timer and Queue Functions contain the majority of activity, and hence the focus of the implementation design effort will be in these components.  It also indicates that Table Storage is most frequenty accessed, and therefore the design of the table record keys should be carefully considered to efficiently meet all processing needs.  
 
 ![Sequence Diagram](images/acquisition-Sequence.svg)
 
