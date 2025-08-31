@@ -66,9 +66,7 @@ Serially enqueued messages for a collection of files should always be given an i
 ### Sequence
 The following UML sequence diagram provides the logical order of the interaction between the components required within this design.  
 
-It also shows that the Timer and Queue Functions contain the majority of activity, and hence the focus of the implementation design effort will be in these components.  It also indicates that Table Storage is most frequenty accessed, and therefore the design of the table record keys should be carefully considered to efficiently meet all processing needs.  
-
 ![Sequence Diagram](images/acquisition-Sequence.svg)
 
-
+This shows that the Timer and Queue Functions contain the majority of activity, and hence the focus of the implementation design effort will be in these components.  It also indicates that Table Storage is the most frequenty used component, and therefore the design of the table record keys should be carefully considered to efficiently meet all processing needs.  
 
