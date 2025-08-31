@@ -1,5 +1,5 @@
 ## UK Property: Prices Paid Data (PPD)
-The UK Property Prices Paid dataset published by the UK ONS requires just a simple design for an Analytics based Dimensional Data Model.  
+The UK Property Prices Paid dataset published by the UK Land Registry requires just a simple design for an Analytics based Dimensional Data Model.  
 https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads  
 https://www.gov.uk/guidance/about-the-price-paid-data#explanations-of-column-headers-in-the-ppd  
 
@@ -36,7 +36,7 @@ A Fact is usually some numerical value to which [Analytic functions](https://en.
 For the Price Paid data, the only fact in the file is the property **Price**.  
 
 #### Dimension
-A Dimension is additional, related, or relevent business information that is associated to a Fact.  For example, the **Month** a property was sold, or the Geographic **Region** of that property.  
+A Dimension is additional, related, or relevent business information that is associated to a Fact.  For example, the **Month** a property was sold, or the geographic **Locality** of that property.  
 For the Price Paid data, all the items except for the Price (a Fact). ID (no business meaning) and Record Type & PPD Category (technical meta-data) are Dimension values.  
 
 #### Measure
@@ -59,8 +59,8 @@ In terms of use-cases, many Dimensional data models located within relational da
 
 #### Analytic Processing
 Other Dimensional models are required for reporting or other end-user analytics (MI/BI).  In these cases it is common for Dimensional models to also be loaded into consumer friendly tools such as Tableau, Power BI/Fabric, Qlik, Looker, etc, where they can be given a semantic overlay to make them business domain specific. There are two main possibilities for analytics:  
-1. The database will be queried directly by users (the semantic model is in the Data Mart).
-2. The database will be queried by an Analytic tool (the semantic model is in the Analytic tool).
+1. The data mart will be queried directly by users (the semantic model is in the Data Mart).
+2. The data mart will be queried by an Analytic tool (the semantic model is in the Analytic tool).
 
 #### Dimensional vs. Dimensional (semantic)
 If the Dimensions within the model require a semantic interpretation, this is often provided by business domain specific Reference or Master data.  
@@ -119,16 +119,32 @@ There are several ways to manage this, using SCD (slowly changing Dimension) typ
 |- |- |- |- |
 |Data Mart is truncated.<br/> All records are inserted. |1|No |The data is always the latest version|
 |All Data is Merged. |2|Full version history by creating new records |Effective start and end dates on each row|
-|Important values are retained for a specific frequency.<br/>New records are inserted. <br/> Special processing for updates.|3|Limited data item versions by updating records |Dimension columns are repeated (the frequency) to contain prior values which must be shuffled on update
+|Important values are retained for a specific frequency.<br/>New records are inserted. <br/> Special processing for updates.|3|Repeated column versions by updating records |Dimension columns are repeated (the frequency) to contain prior values which must be shuffled on update
 
 Dimensions within the same model may be created with different SCD types, depending on the requirements.  
 
+#### Null Dimensions
+Within the Land Registry Property Prices dataset, there are many instances where a record has no column value for a particular Dimension.  A good example is the *Locality*.  
+
+Create a NULL Dimension record if:
+1. There is a mandatory relationship to a Dimension but source data is missing.
+2. Query requirements indicates use of *IS NULL* conditions for the Dimension business key.
+
+Optionally, a data model may be annotated to indicate special conditions. 
+
+<br/>
+
 ## PPD Data Model
-The logical data model, as a Dimensional semantic model, for the PPD file is shown below. 
+The logical data model, as a Dimensional model, for the PPD file is shown below. 
 
 ![PPD Logical Data Model](./images/ppd-logical-data-model.svg)
 
-The data model uses a [simplified UML syntax](https://books.google.co.uk/books/about/UML_and_Data_Modeling.html?id=kEi3wAEACAAJ&redir_esc=y) as defined by David C. Hay in 2011.  The PK and FK icons are courtesy of the Visio UML Database Notation stencil.  
+The data model uses a [simplified UML syntax](https://books.google.co.uk/books/about/UML_and_Data_Modeling.html?id=kEi3wAEACAAJ&redir_esc=y) as defined by David C. Hay (2011).  The PK and FK icons are courtesy of the Visio UML Database Notation stencil.  
 
-### Null Dimensions
+#### Example Measures & Calculations
+- The highest total number of leasehold of properties sold grouped by year.
+- Average price of new build properties sold in 2021 in Sheffield.
+- The % difference between detached and terraced properties sold in Kent in January over the past 5 years.
+
+
 
