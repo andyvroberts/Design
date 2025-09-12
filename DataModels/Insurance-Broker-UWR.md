@@ -1,5 +1,5 @@
 ## Insurance Broker view of Underwriting - CDM
-The conceptual data model acts as a concept map, describing how a Broker organistaion views and understands Underwriting in the context of its own counterparty relationships and high-level business processes.  
+The conceptual data model acts as a concept map, describing how a Broker organisation views and understands Underwriting in the context of its own counterparty relationships and high-level business processes.  
 
 This data model was created using Information Engineering (IE) notation and follows its conventions for relationships and phrases.  
 <br/>
